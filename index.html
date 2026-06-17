@@ -280,40 +280,64 @@
       <section class="section" id="calculator">
         <div class="container">
           <div class="section-heading">
-            <span class="eyebrow">Công cụ chốt đơn</span>
+            <span class="eyebrow">Công cụ tính giá</span>
             <h2>Tính nhanh giá theo số lượng key</h2>
             <p>
-              Khách chọn sản phẩm, nhập số lượng và nhận tổng giá dự kiến ngay
-              trên website.
+              Khách có thể nhập số lượng cho từng sản phẩm cùng lúc và nhận tổng
+              giá dự kiến ngay trên website.
             </p>
           </div>
 
           <div class="calculator-wrap">
             <div class="calculator-card">
-              <h3>Nhập nhu cầu</h3>
-              <p>Giá tự động đổi khi số lượng từ 10 key trở lên.</p>
+              <h3>Nhập số lượng từng sản phẩm</h3>
+              <p>
+                Giá tự động đổi theo số lượng của từng sản phẩm. Có thể chọn
+                cùng lúc Windows 10, Windows 11 và Microsoft 365 E5 Developer.
+              </p>
 
-              <div class="field-group">
-                <label for="productType">Loại sản phẩm</label>
-                <select id="productType">
-                  <option value="windows">
-                    Windows 10 / 11 Retail Vĩnh Viễn
-                  </option>
-                  <option value="office">
-                    Office 365 E5 Developer - 1 năm
-                  </option>
-                </select>
-              </div>
+              <div class="calc-product-list">
+                <div class="calc-product-row">
+                  <div>
+                    <label for="qtyWin10">Windows 10 Retail Vĩnh Viễn</label>
+                    <span>Dưới 10 key: 899k/key • Từ 10 key: 799k/key</span>
+                  </div>
+                  <input
+                    type="number"
+                    id="qtyWin10"
+                    min="0"
+                    placeholder="SL"
+                    inputmode="numeric"
+                  />
+                </div>
 
-              <div class="field-group">
-                <label for="quantity">Số lượng key</label>
-                <input
-                  type="number"
-                  id="quantity"
-                  min="1"
-                  value="1"
-                  inputmode="numeric"
-                />
+                <div class="calc-product-row">
+                  <div>
+                    <label for="qtyWin11">Windows 11 Retail Vĩnh Viễn</label>
+                    <span>Dưới 10 key: 899k/key • Từ 10 key: 799k/key</span>
+                  </div>
+                  <input
+                    type="number"
+                    id="qtyWin11"
+                    min="0"
+                    placeholder="SL"
+                    inputmode="numeric"
+                  />
+                </div>
+
+                <div class="calc-product-row">
+                  <div>
+                    <label for="qtyOffice">Microsoft 365 E5 Developer</label>
+                    <span>Dưới 10 key: 599k/năm • Từ 10 key: 499k/năm</span>
+                  </div>
+                  <input
+                    type="number"
+                    id="qtyOffice"
+                    min="0"
+                    placeholder="SL"
+                    inputmode="numeric"
+                  />
+                </div>
               </div>
 
               <button class="btn btn-primary" type="button" id="copyQuote">
@@ -322,22 +346,19 @@
             </div>
 
             <div class="quote-result" aria-live="polite">
-              <div class="result-line">
-                <span>Sản phẩm</span>
-                <strong id="resultProduct">Windows 10 / 11 Retail</strong>
+              <h3 style="position: relative; z-index: 1; margin-bottom: 18px">
+                Báo giá dự kiến
+              </h3>
+
+              <div class="quote-summary-list" id="summaryList">
+                <p class="empty-summary">Chưa nhập số lượng sản phẩm.</p>
               </div>
-              <div class="result-line">
-                <span>Đơn giá áp dụng</span>
-                <strong id="resultUnit">899.000đ/key</strong>
-              </div>
-              <div class="result-line">
-                <span>Số lượng</span>
-                <strong id="resultQty">1 key</strong>
-              </div>
+
               <div class="result-total">
-                <span>Tổng dự kiến</span>
-                <strong id="resultTotal">899.000đ</strong>
+                <span>Tổng cộng</span>
+                <strong id="grandTotal">0đ</strong>
               </div>
+
               <p
                 style="
                   color: rgba(255, 255, 255, 0.72);
@@ -430,13 +451,14 @@
                   và quy mô triển khai.
                 </li>
                 <li>
-                  Microsoft 365 E5 Developer: dành cho môi trường
-                  developer/test, phù hợp để trải nghiệm, thiết lập và kiểm thử
-                  hệ sinh thái Microsoft 365.
+                  Microsoft 365 E5 Developer phù hợp cho cá nhân, người dùng phổ
+                  thông, học tập, trải nghiệm, test tính năng, demo kỹ thuật
+                  hoặc nhu cầu sử dụng linh hoạt trong hệ sinh thái Microsoft
+                  365.
                 </li>
                 <li>
-                  Microsoft 365 E5 Developer không thay thế cho các gói
-                  Microsoft 365 thương mại dùng chính thức cho doanh nghiệp.
+                  Tư vấn rõ theo từng nhu cầu: dùng cá nhân, học tập, văn phòng
+                  nhỏ, doanh nghiệp hoặc mua số lượng lớn.
                 </li>
                 <li>Có xuất hóa đơn đầy đủ theo thông tin khách hàng.</li>
               </ul>
@@ -472,14 +494,34 @@
 
             <div class="faq-item">
               <button class="faq-question" type="button">
-                <span>Microsoft 365 E5 Developer phù hợp với nhu cầu nào?</span>
+                <span
+                  >Người dùng cá nhân có dùng Microsoft 365 E5 Developer được
+                  không?</span
+                >
                 <span>+</span>
               </button>
               <div class="faq-content">
                 <p>
-                  Microsoft 365 E5 Developer phù hợp cho môi trường
-                  developer/test, trải nghiệm hệ sinh thái Microsoft 365, kiểm
-                  thử tính năng, demo kỹ thuật hoặc học tập nội bộ.
+                  Có. Microsoft 365 E5 Developer phù hợp cho người dùng cá nhân,
+                  học tập, trải nghiệm hệ sinh thái Microsoft 365, làm việc linh
+                  hoạt, test tính năng hoặc demo nội bộ. Khi tư vấn, chúng tôi
+                  sẽ hỗ trợ khách chọn đúng gói theo nhu cầu sử dụng thực tế.
+                </p>
+              </div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                <span
+                  >Có thể mua cùng lúc Windows 10, Windows 11 và Microsoft 365
+                  E5 Developer không?</span
+                >
+                <span>+</span>
+              </button>
+              <div class="faq-content">
+                <p>
+                  Có. Khách hàng có thể chọn nhiều sản phẩm cùng lúc và nhập số
+                  lượng riêng cho từng sản phẩm. Đội ngũ tư vấn sẽ tổng hợp nhu
+                  cầu và báo giá phù hợp.
                 </p>
               </div>
             </div>
@@ -539,11 +581,11 @@
               Gửi số lượng key cần mua, phiên bản Windows mong muốn và thông tin
               xuất hóa đơn. Đội ngũ tư vấn sẽ hỗ trợ chọn gói phù hợp.
             </p>
-            <div class="contact-info">
+            <!-- <div class="contact-info">
               <a href="tel:0900000000">☎ 0900 000 000</a>
               <a href="mailto:sales@example.com">✉ sales@example.com</a>
               <div>⏱ Hỗ trợ: 8:00 - 21:00 hằng ngày</div>
-            </div>
+            </div> -->
           </div>
 
           <form
