@@ -2,106 +2,199 @@ const header = document.getElementById("siteHeader");
 const topProgress = document.getElementById("topProgress");
 const menuToggle = document.getElementById("menuToggle");
 const navMenu = document.getElementById("navMenu");
-const productType = document.getElementById("productType");
-const quantity = document.getElementById("quantity");
-const resultProduct = document.getElementById("resultProduct");
-const resultUnit = document.getElementById("resultUnit");
-const resultQty = document.getElementById("resultQty");
-const resultTotal = document.getElementById("resultTotal");
 const copyQuote = document.getElementById("copyQuote");
 const toast = document.getElementById("toast");
 
-const pricing = {
-  windows: {
-    name: "Windows 10 / 11 Retail",
-    under10: 899000,
-    over10: 799000,
-    suffix: "/key",
-  },
-  office: {
-    name: "Office 365 E5 Developer",
-    under10: 599000,
-    over10: 499000,
-    suffix: "/năm",
-  },
-};
+const qtyWin10 = document.getElementById("qtyWin10");
+const qtyWin11 = document.getElementById("qtyWin11");
+const qtyOffice = document.getElementById("qtyOffice");
+const summaryList = document.getElementById("summaryList");
+const grandTotal = document.getElementById("grandTotal");
 
 function formatVND(value) {
   return new Intl.NumberFormat("vi-VN").format(value) + "đ";
 }
 
-function getQuote() {
-  const type = productType.value;
-  const qty = Math.max(1, Number(quantity.value || 1));
-  const item = pricing[type];
-  const unit = qty >= 10 ? item.over10 : item.under10;
-  const total = unit * qty;
-
-  return { type, qty, item, unit, total };
-}
-
-function updateQuote() {
-  const quote = getQuote();
-  resultProduct.textContent = quote.item.name;
-  resultUnit.textContent = formatVND(quote.unit) + quote.item.suffix;
-  resultQty.textContent = quote.qty + " key";
-  resultTotal.textContent = formatVND(quote.total);
-}
-
 function showToast(message) {
+  if (!toast) return;
+
   toast.textContent = message;
   toast.classList.add("is-show");
-  setTimeout(() => toast.classList.remove("is-show"), 2200);
+
+  setTimeout(() => {
+    toast.classList.remove("is-show");
+  }, 2200);
 }
 
+/* Header scroll progress */
 window.addEventListener("scroll", () => {
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  topProgress.style.width = percent + "%";
-  header.classList.toggle("is-scrolled", scrollTop > 10);
+
+  if (topProgress) {
+    topProgress.style.width = percent + "%";
+  }
+
+  if (header) {
+    header.classList.toggle("is-scrolled", scrollTop > 10);
+  }
 });
 
-menuToggle.addEventListener("click", () => {
-  const isOpen = navMenu.classList.toggle("is-open");
-  menuToggle.classList.toggle("is-open", isOpen);
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-});
+/* Mobile menu */
+if (menuToggle && navMenu) {
+  menuToggle.addEventListener("click", () => {
+    const isOpen = navMenu.classList.toggle("is-open");
 
-navMenu.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", () => {
-    navMenu.classList.remove("is-open");
-    menuToggle.classList.remove("is-open");
-    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.classList.toggle("is-open", isOpen);
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
   });
-});
 
+  navMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      navMenu.classList.remove("is-open");
+      menuToggle.classList.remove("is-open");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
+/* FAQ */
 document.querySelectorAll(".faq-question").forEach((button) => {
   button.addEventListener("click", () => {
     const item = button.closest(".faq-item");
     const content = item.querySelector(".faq-content");
+
+    if (!item || !content) return;
+
     const isOpen = item.classList.toggle("is-open");
     content.style.maxHeight = isOpen ? content.scrollHeight + "px" : 0;
   });
 });
 
-productType.addEventListener("change", updateQuote);
-quantity.addEventListener("input", updateQuote);
+/* Calculator nhiều sản phẩm */
+const multiPricing = {
+  win10: {
+    name: "Windows 10 Retail Vĩnh Viễn",
+    under10: 899000,
+    over10: 799000,
+    suffix: "/key",
+    input: qtyWin10,
+  },
+  win11: {
+    name: "Windows 11 Retail Vĩnh Viễn",
+    under10: 899000,
+    over10: 799000,
+    suffix: "/key",
+    input: qtyWin11,
+  },
+  office: {
+    name: "Microsoft 365 E5 Developer",
+    under10: 599000,
+    over10: 499000,
+    suffix: "/năm",
+    input: qtyOffice,
+  },
+};
 
-copyQuote.addEventListener("click", async () => {
-  const quote = getQuote();
-  const text = `Báo giá ${quote.item.name}: số lượng ${quote.qty} key, đơn giá ${formatVND(quote.unit)}${quote.item.suffix}, tổng dự kiến ${formatVND(quote.total)}. Có hỗ trợ xuất hóa đơn và tư vấn kích hoạt.`;
+function getMultiQuote() {
+  const items = Object.values(multiPricing)
+    .map((item) => {
+      const qty = Math.max(0, Number(item.input?.value || 0));
+      const unit = qty >= 10 ? item.over10 : item.under10;
+      const total = qty * unit;
 
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast("Đã copy báo giá");
-  } catch (error) {
-    showToast("Trình duyệt chưa cho phép copy");
+      return {
+        name: item.name,
+        qty,
+        unit,
+        total,
+        suffix: item.suffix,
+      };
+    })
+    .filter((item) => item.qty > 0);
+
+  const totalAll = items.reduce((sum, item) => sum + item.total, 0);
+
+  return {
+    items,
+    totalAll,
+  };
+}
+
+function updateMultiQuote() {
+  if (!summaryList || !grandTotal) return;
+
+  const quote = getMultiQuote();
+
+  if (!quote.items.length) {
+    summaryList.innerHTML = `
+      <p class="empty-summary">Chưa nhập số lượng sản phẩm.</p>
+    `;
+    grandTotal.textContent = formatVND(0);
+    return;
+  }
+
+  summaryList.innerHTML = quote.items
+    .map(
+      (item) => `
+        <div class="summary-item">
+          <div>
+            <strong>${item.name}</strong>
+            <span>${item.qty} key × ${formatVND(item.unit)}${item.suffix}</span>
+          </div>
+          <b>${formatVND(item.total)}</b>
+        </div>
+      `,
+    )
+    .join("");
+
+  grandTotal.textContent = formatVND(quote.totalAll);
+}
+
+[qtyWin10, qtyWin11, qtyOffice].forEach((input) => {
+  if (input) {
+    input.addEventListener("input", updateMultiQuote);
   }
 });
 
-document.getElementById("year").textContent = new Date().getFullYear();
-updateQuote();
+/* Copy báo giá */
+if (copyQuote) {
+  copyQuote.addEventListener("click", async () => {
+    const quote = getMultiQuote();
+
+    if (!quote.items.length) {
+      showToast("Vui lòng nhập số lượng sản phẩm");
+      return;
+    }
+
+    const detailText = quote.items
+      .map((item) => {
+        return `${item.name}: ${item.qty} key × ${formatVND(item.unit)}${item.suffix} = ${formatVND(item.total)}`;
+      })
+      .join("\n");
+
+    const text = `Báo giá dự kiến:\n${detailText}\nTổng cộng: ${formatVND(
+      quote.totalAll,
+    )}\nCó hỗ trợ xuất hóa đơn và tư vấn kích hoạt.`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Đã copy báo giá");
+    } catch (error) {
+      showToast("Trình duyệt chưa cho phép copy");
+    }
+  });
+}
+
+/* Year */
+const yearEl = document.getElementById("year");
+
+if (yearEl) {
+  yearEl.textContent = new Date().getFullYear();
+}
+
+updateMultiQuote();
 
 // form submission with Google Sheets API
 
